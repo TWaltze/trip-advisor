@@ -1,12 +1,14 @@
 import sys
-
-pathFile = sys.argv[1]
+import Queue
 
 def generateMap(input_file):
+    # Useful helpers
     startIndicator = 'R'
     endIndicator = 'T'
     width = None
+    height = None
 
+    # Return values
     field = {}
     start = None
     end = None
@@ -45,7 +47,6 @@ def generateMap(input_file):
 
             # If position + width >= len, it's on the bottommost edge
             if position + width < len(tiles):
-                print "South"
                 # South
                 field[position]['neighbors'].append(position + width)
 
@@ -60,4 +61,38 @@ def isValidSpace(space):
 
     return space in valid
 
-print generateMap(pathFile)
+def pathExists(m):
+    field = m['field']
+    start = m['start']
+    end = m['end']
+
+    # Keys of tiles to visit and spread out from
+    reachable = Queue.Queue()
+    reachable.put(start)
+
+    # Key of tiles we've visited
+    visited = {}
+
+    # BFS
+    while not reachable.empty():
+        current = reachable.get()
+        visited[current] = True
+
+        # We've reached the end, success
+        if current == end:
+            print 'yes'
+            return
+
+        # Step through each reachable tile
+        for neighbor in field[current]['neighbors']:
+            # This tile has neighbors we haven't visited
+            if neighbor not in visited and isValidSpace(field[neighbor]['type']):
+                # Add neighbor to the list of tiles to visit
+                # if they are a new, visitable neighbor
+                reachable.put(neighbor)
+
+    # never reached end, fail
+    print 'no'
+
+pathFile = sys.argv[1]
+pathExists(generateMap(pathFile))

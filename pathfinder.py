@@ -7,54 +7,61 @@ def generateMap(input_file):
     endIndicator = 'T'
     width = None
     height = None
+    string = None
 
     # Return values
     field = {}
     start = None
     end = None
 
+    # Read in the file
     with open(input_file, "r") as raw:
         string = raw.read()
 
-        # Ignore newline characters
-        tiles = list(string.replace('\n', ''))
+    # Ignore newline characters
+    tiles = list(string.replace('\n', ''))
 
-        height = string.count('\n') # Number of lines
-        width = len(tiles) / height # Number of characters per line = total characters / number of lines
+    height = string.count('\n') # Number of lines
+    width = len(tiles) / height # Number of characters per line = total characters / number of lines
 
-        for tile in enumerate(tiles):
-            position = tile[0]
-            kind = tile[1]
-            field[position] = {
-                'type': kind,
-                'neighbors': []
-            }
-
-            # If position % width == 0, it's on the leftmost edge
-            if position % width != 0:
-                # West
-                field[position]['neighbors'].append(position - 1)
-
-            # If position + 1 % width == 0, it's on the rightmost edge
-            if (position + 1) % width != 0:
-                # East
-                field[position]['neighbors'].append(position + 1)
-
-            # If position - width < 0, it's on the topmost edge
-            if position - width >= 0:
-                # North
-                field[position]['neighbors'].append(position - width)
-
-            # If position + width >= len, it's on the bottommost edge
-            if position + width < len(tiles):
-                # South
-                field[position]['neighbors'].append(position + width)
+    for tile in enumerate(tiles):
+        position = tile[0]
+        kind = tile[1]
+        field[position] = {
+            'type': kind,
+            'neighbors': findNeighbors(position, width, len(tiles))
+        }
 
     return {
         'field': field,
         'start': tiles.index(startIndicator),
         'end': tiles.index(endIndicator)
     }
+
+def findNeighbors(position, width, total):
+    neighbors = []
+
+    # If position % width == 0, it's on the leftmost edge
+    if position % width != 0:
+        # West
+        neighbors.append(position - 1)
+
+    # If position + 1 % width == 0, it's on the rightmost edge
+    if (position + 1) % width != 0:
+        # East
+        neighbors.append(position + 1)
+
+    # If position - width < 0, it's on the topmost edge
+    if position - width >= 0:
+        # North
+        neighbors.append(position - width)
+
+    # If position + width >= len, it's on the bottommost edge
+    if position + width < total:
+        # South
+        neighbors.append(position + width)
+
+    return neighbors
 
 def isValidSpace(space):
     valid = ['.', 'T', 'R']

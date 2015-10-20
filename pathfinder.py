@@ -56,7 +56,7 @@ def findNeighbors(position, width, total):
         # North
         neighbors.append(position - width)
 
-    # If position + width >= len, it's on the bottommost edge
+    # If position + width >= total possible positions, it's on the bottommost edge
     if position + width < total:
         # South
         neighbors.append(position + width)
